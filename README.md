@@ -6,7 +6,7 @@
 
 ## Visualize interface post-experiment
 
-1. run `python3 _utils_postprocess/post_trial_visualization --path <folder path for al the data>`
+1. run `python3 _utils_postprocess/post_trial_visualization --path <folder path for all the data>`
 
 ## Debug Suggestions
 

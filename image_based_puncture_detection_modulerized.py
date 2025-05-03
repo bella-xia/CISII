@@ -16,7 +16,7 @@ from _utils_image.image_conversion_without_using_ros import (
 )
 from _utils_rospy.publisher_module import PubRosTopic, RosTopicPublisher
 from _utils_rospy.subscriber_module import SubRosTopic, RosTopicSubscriber
-from _utils_model.image_based_util_visualization_v2 import VisualizationModulePG
+from _utils_model.image_based_util_visualization import VisualizationModulePG
 
 
 def convert_ros_to_numpy(image_message):
@@ -67,12 +67,12 @@ if __name__ == "__main__":
                 "iOCT_camera_subscriber",
                 "iOCT_frame",
             ),
-                SubRosTopic(
+            SubRosTopic(
                 "/oct_b_scan",
                 Image,
                 "bscan_subscriber",
                 "bscan_frame",
-            )
+            ),
         ]
     )
 
@@ -93,17 +93,22 @@ if __name__ == "__main__":
     try:
         while not rospy.is_shutdown():
             image = image_to_numpy(subscriber_manager.get_data("iOCT_frame"))
-            bscan  = subscriber_manager.get_data("bscan_frame")
+            bscan = subscriber_manager.get_data("bscan_frame")
             bscan = image_to_numpy(bscan) if bscan is not None else None
             image = cv2.resize(image, (640, 480))
-            numeric_data, mask, flag, vel, acc = image_processor.serialized_processing(image)
+            numeric_data, mask, flag, vel, acc = image_processor.serialized_processing(
+                image
+            )
             publisher_manager.publish_data(IMAGE_MODEL_DATA_PUBLISHER, numeric_data)
             publisher_manager.publish_data(
-                ["mask_publisher"], [numpy_to_image((mask * 255).astype(np.uint8), encoding="mono8")]
+                ["mask_publisher"],
+                [numpy_to_image((mask * 255).astype(np.uint8), encoding="mono8")],
             )
             publisher_manager.publish_data(["flag_publisher"], [flag])
             publisher_manager.publish_data(["starter_publisher"], [True])
-            visual.add_data(image, mask, numeric_data + [vel, acc], bscan=bscan, flag=(flag == 1))
+            visual.add_data(
+                image, mask, numeric_data + [vel, acc], bscan=bscan, flag=(flag == 1)
+            )
             QtWidgets.QApplication.processEvents()
         rospy.spin()
 

@@ -4,8 +4,6 @@ from PyQt5.QtWidgets import QGraphicsRectItem
 from PyQt5.QtGui import QBrush, QColor
 import numpy as np
 
-VISUAL_XY = True
-
 
 class VisualizationModulePG:
     def __init__(self):
@@ -29,10 +27,10 @@ class VisualizationModulePG:
         view3.addItem(self.bscan_view)
 
         self.scatter_px = pg.ScatterPlotItem(
-            pen=pg.mkPen(None), brush=pg.mkBrush("r"), size=10
+            pen=pg.mkPen(None), brush=pg.mkBrush("g"), size=10
         )
         self.scatter_mask = pg.ScatterPlotItem(
-            pen=pg.mkPen(None), brush=pg.mkBrush("r"), size=10
+            pen=pg.mkPen(None), brush=pg.mkBrush("g"), size=10
         )
 
         view1.addItem(self.scatter_px)
@@ -59,9 +57,8 @@ class VisualizationModulePG:
             p.addLegend()
             self.plots.append(p)
 
-            if VISUAL_XY:
-                self.lines[col].append(p.plot(pen="y", name="x"))
-                self.lines[col].append(p.plot(pen="r", name="y"))
+            # self.lines[col].append(p.plot(pen="y", name="x"))
+            # self.lines[col].append(p.plot(pen="r", name="y"))
             self.lines[col].append(p.plot(pen="g", name="mag"))
         self.lines[-1].append(p.plot(pen="w", name="acc"))
 
@@ -74,7 +71,8 @@ class VisualizationModulePG:
         self.timer.timeout.connect(self.update)
         self.timer.start(1)
 
-    def add_data(self, image, mask, data, bscan=None, flag=False):
+    def add_data(self, image, mask, data, bscan=None,
+                flag=False):
 
         px, py, kpx, kpy, vx, vy, kv, ka = data
 
@@ -114,8 +112,8 @@ class VisualizationModulePG:
             self.scatter_px.setData([px], [480 - py])
             self.scatter_mask.setData([px], [480 - py])
         else:
-            self.scatter_px.setData([], [])
-            self.scatter_mask.setData([], [])
+           self.scatter_px.setData([], [])
+           self.scatter_mask.setData([], [])
 
         dpx = px - self.pos_data[0][-1]
         dpy = py - self.pos_data[1][-1]
@@ -150,21 +148,16 @@ class VisualizationModulePG:
 
         data_len = min(50, len(self.x_data))
         for i in range(3):  # for each plot
-            if VISUAL_XY:
-                self.lines[i][0].setData(
-                    self.x_data[-data_len:], self.y_data[i * 3 + 0][-data_len:]
-                )
-                self.lines[i][1].setData(
-                    self.x_data[-data_len:], self.y_data[i * 3 + 1][-data_len:]
-                )
-                self.lines[i][2].setData(
-                    self.x_data[-data_len:], self.y_data[i * 3 + 2][-data_len:]
-                )
-            else:
-                self.lines[i][2].setData(
-                    self.x_data[-data_len:], self.y_data[i * 3 + 2][-data_len:]
-                )
-        self.lines[-1][-1].setData(self.x_data[-data_len:], self.y_data[-1][-data_len:])
+            # self.lines[i][0].setData(
+            #     self.x_data[-data_len:], self.y_data[i * 3 + 0][-data_len:]
+            # )
+            # self.lines[i][1].setData(
+            #     self.x_data[-data_len:], self.y_data[i * 3 + 1][-data_len:]
+            # )
+            self.lines[i][0].setData(
+                self.x_data[-data_len:], self.y_data[i * 3 + 2][-data_len:]
+            )
+        self.lines[-1][1].setData(self.x_data[-data_len:], self.y_data[-1][-data_len:])
 
 
 # Example use:
